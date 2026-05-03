@@ -1,0 +1,34 @@
+controller:
+  image:
+    tag: v1.15.1
+
+  replicaCount: 1
+
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+    agentpool: system
+
+  tolerations:
+    - key: "CriticalAddonsOnly"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+
+  service:
+    type: LoadBalancer
+    internal:
+        enabled: true
+        annotations: {
+          service.beta.kubernetes.io/azure-load-balancer-internal: "false",
+          service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
+        }
+
+  ingressClassResource:
+    enabled: true
+    name: nginx
+    default: true
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 90Mi

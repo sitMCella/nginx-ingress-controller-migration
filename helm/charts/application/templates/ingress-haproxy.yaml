@@ -1,0 +1,29 @@
+{{/*
+Temporary HAProxy Ingress resource for migration from NGINX Ingress Controller.
+This resource enables parallel routing through HAProxy while gradually migrating
+traffic from the NGINX ingress controller. Once migration is complete, the primary 
+ingress resource must be updated with the haproxy ingress class, and this ingress 
+resource can be removed.
+*/}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "react-app.fullname" . }}-haproxy
+  labels:
+    {{- include "react-app.labels" . | nindent 4 }}
+    ingress.class: haproxy
+  annotations:
+    kubernetes.io/ingress.class: haproxy
+spec:
+  ingressClassName: haproxy
+  rules:
+    - host: "app.local"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "react-app.fullname" . }}
+                port:
+                  number: {{ .Values.service.port }}

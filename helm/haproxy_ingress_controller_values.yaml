@@ -1,0 +1,46 @@
+controller:
+  kind: Deployment
+
+  ingressClass: haproxy
+
+  image:
+    tag: 3.2.6
+  
+  replicaCount: 2
+
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+    agentpool: system
+
+  tolerations:
+    - key: "CriticalAddonsOnly"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+
+  service:
+    enabled: true
+    type: LoadBalancer
+    annotations: {
+      service.beta.kubernetes.io/azure-load-balancer-internal: "false",
+      service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
+    }
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  metrics:
+    enabled: false
+
+crdjob:
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+    agentpool: system
+
+  tolerations:
+    - key: "CriticalAddonsOnly"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
